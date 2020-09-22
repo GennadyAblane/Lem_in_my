@@ -12,56 +12,93 @@
 
 #include "get_next_line.h"
 
-static char			*ft_str_add(char **str)
+static char	*ft_cpline(char **ost, size_t n)
 {
-	char	*n_ptr;
+	char	*op;
 	char	*tmp;
-	char	*line;
-	size_t	b;
+	size_t	i;
+	ssize_t p;
 
-	n_ptr = ft_strchr(*str, '\n');
-	if (n_ptr)
-		*n_ptr = '\0';
-	line = ft_strdup(*str);
-	b = n_ptr ? 1 : 0;
-	tmp = ft_strdup(ft_strchr(*str, '\0') + b);
-	ft_strdel(str);
-	*str = tmp;
-	return (line);
+	i = 0;
+	if ((*ost)[i] == '\n')
+		op = ft_strnew(0);
+	else if ((*ost)[i] == '\0')
+		return (NULL);
+	else
+	{
+		op = ft_strnew(n);
+		while (i < n)
+		{
+			op[i] = (*ost)[i];
+			i++;
+		}
+	}
+	n++;
+	p = (ft_strlen(*ost) - n);
+	tmp = ft_strsub(*ost, n, p);
+	free(*ost);
+	(*ost) = tmp;
+	return (op);
 }
 
-static size_t		ft_gnl_del(char **as, size_t n)
+int			ft_redjoin(char **ost, int fd)
 {
-	if (as && *as)
-	{
-		free(*as);
-		*as = NULL;
-	}
-	return (n);
-}
+	char	buf[BUFF_SIZE + 1];
+	char	*tmp;
+	ssize_t	res_read;
 
-int					get_next_line(const int fd, char **line)
-{
-	static char	*str[OPEN_MAX];
-	char		*tmp;
-	char		buf[BUFF_SIZE + 1];
-	ssize_t		res;
-
-	if (fd < 0 || !line || fd > OPEN_MAX || BUFF_SIZE <= 0)
-		return (-1);
-	if (!str[fd])
-		str[fd] = ft_strnew(0);
-	while (!(ft_strchr(str[fd], '\n')) && (res = read(fd, buf, BUFF_SIZE)))
+	res_read = read(fd, buf, BUFF_SIZE);
+	if (res_read < 1)
 	{
-		if (res == -1)
-			return (ft_gnl_del(&str[fd], -1));
-		buf[res] = '\0';
-		tmp = ft_strjoin(str[fd], buf);
-		ft_strdel(&str[fd]);
-		str[fd] = tmp;
+		if (res_read == 0)
+			return (0);
+		else
+			return (-1);
 	}
-	if (*str[fd] == '\0')
-		return (ft_gnl_del(&str[fd], 0));
-	*line = ft_str_add(&str[fd]);
+	buf[res_read] = '\0';
+	tmp = ft_strjoin(*ost, buf);
+	free(*ost);
+	*ost = tmp;
 	return (1);
+}
+
+int			ft_job(const int fd, char **line, char **ost)
+{
+	ssize_t	n;
+	ssize_t res_read;
+
+	res_read = 1;
+	n = 0;
+	while ((*ost)[n] != '\n' && res_read > 0)
+	{
+		if ((*ost)[n] == '\0')
+		{
+			if ((res_read = ft_redjoin(ost, fd)) < 1)
+			{
+				if ((*ost)[0] != '\0')
+				{
+					*line = (ft_cpline(ost, n));
+					return (1);
+				}
+				ft_strdel(ost);
+				return (res_read);
+			}
+			n--;
+		}
+		n++;
+	}
+	*line = (ft_cpline(ost, n));
+	return (1);
+}
+
+int			get_next_line(const int fd, char **line)
+{
+	static char *ost[4864];
+
+	if (fd < 0 || !line || BUFF_SIZE < 1 ||
+		(read(fd, NULL, 0)) < 0 || (fd > OPEN_MAX))
+		return (-1);
+	if (!ost[fd])
+		ost[fd] = ft_strnew(0);
+	return (ft_job(fd, line, &ost[fd]));
 }

@@ -14,11 +14,15 @@
 
 void	ft_free_line(char **line)
 {
-	if (*line)
+	char *tmp;
+
+	tmp = *line;
+	if (tmp)
 	{
-		free(*line);
-		*line = NULL;
+		free(tmp);
+		tmp = NULL;
 	}
+	*line = tmp;
 }
 
 char	*ft_next_gnl(char *line)
