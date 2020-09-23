@@ -6,28 +6,25 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:03:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/22 12:37:03 by ablane           ###   ########.fr       */
+/*   Updated: 2020/09/22 16:38:50 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lem_in.h"
 
-void	ft_free_line(char **line)
+char	*ft_free_line(char *line)
 {
-	char *tmp;
-
-	tmp = *line;
-	if (tmp)
+	if (line)
 	{
-		free(tmp);
-		tmp = NULL;
+		free(line);
+		line = NULL;
 	}
-	*line = tmp;
+	return (line);
 }
 
 char	*ft_next_gnl(char *line)
 {
-	ft_free_line(&line);
+	line = ft_free_line(line);
 	if (get_next_line(0, &line) > 0)
 		return (line);
 	return (NULL);

@@ -32,8 +32,9 @@ int main()
 {
 	t_lem_in *lem_in;
 
+
 	lem_in = init_lem_in();
 	parsing_input(lem_in);
 	ft_printf("Hello, World!\n");
-	return (0);
+	exit(0);
 }

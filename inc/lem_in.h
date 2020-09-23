@@ -41,7 +41,7 @@ t_room					*new_room(char *name, int x, int y);
 //void					del_node(void *content, size_t content_size);
 //void					find_solution(t_lem_in *lem_in);
 //void					add_corridor(t_bilist *corridor, t_bilist **corridors);
-void 					ft_free_line(char **line);
+char					*ft_free_line(char *line);
 char					*ft_next_gnl(char *line);
 
 #endif //LEM_IN_H
