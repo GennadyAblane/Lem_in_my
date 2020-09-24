@@ -15,7 +15,7 @@ NAME_EXEC = lem-in
 TABS = \t\t
 
 CC = gcc
-FLAGS = -O2 -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra
 LIB_FLAGS = -L$(LIBFT_DIR) -lft -L$(LIBFTPRINTF_DIR) -lftprintf
 
 INCLUDES = -I$(HEADERS_DIR) -I$(LIBFT_HEADERS) -I$(LIBFTPRINTF_HEADERS)

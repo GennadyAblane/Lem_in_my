@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:11:27 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/23 11:23:18 by ablane           ###   ########.fr       */
+/*   Updated: 2020/09/24 14:24:46 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,13 +244,26 @@ int		check_start_and_end(t_lem_in *lem_in)
 
 void	ft_last_chek(int gnl, t_lem_in *lem_in)
 {
-	t_lem_in *tmp;
-	int i;
-
 	if (gnl < 0)
 		terminate(ERR_GNL_READ);
 	if (!check_start_and_end(lem_in))
 		terminate(ERR_BAD_INPUT);
+}
+
+int		ft_read_edge(t_lem_in *lem_in, char *line, int gnl)
+{
+	while (gnl > 0)
+	{
+		gnl = get_next_line(0, &line);
+		if (gnl < 1)
+			break ;
+		if (ft_strchr(line, '-') || (ft_strchr(line, '#')))
+			ft_add_edge(lem_in, line);
+		else
+			terminate("ERR_BAD_LINKS");
+		line = ft_free_line(line);
+	}
+	return (gnl);
 }
 
 void	parsing_input(t_lem_in *lem_in)
@@ -271,13 +284,7 @@ void	parsing_input(t_lem_in *lem_in)
 			i = ft_add_edge(lem_in, line);
 		line = ft_free_line(line);
 	}
-	while (gnl > 0 && (gnl = get_next_line(0, &line)) > 0)
-	{
-		if (ft_strchr(line, '-') || (ft_strchr(line, '#')))
-			ft_add_edge(lem_in, line);
-		else
-			terminate("ERR_BAD_LINKS");
-		line = ft_free_line(line);
-	}
+	if (gnl > 0)
+		gnl = ft_read_edge(lem_in, line, gnl);
 	ft_last_chek(gnl, lem_in);
 }

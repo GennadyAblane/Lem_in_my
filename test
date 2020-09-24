@@ -8,7 +8,7 @@
 ##starts
 ###credntsend
 ##srtnir
-st#art     1      3
+start 1 3
 room1 5 6
 room2 8 9
 room3 7 8
@@ -29,3 +29,15 @@ end 3 5
 room9 8 2
 #iersntie
 start-room1
+room1-room2
+room2-room3
+room3-room4
+#ienstrarstien
+#iersntirs
+room4-room5
+room5-room6
+room6-room7
+room7-room8
+room8-room9
+room9-end
+#iersntirs

@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:46:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/21 15:46:40 by ablane           ###   ########.fr       */
+/*   Updated: 2020/09/23 12:04:45 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,19 @@ t_lem_in		*init_lem_in(void)
 }
 
 
+void	ft_zafrish(t_lem_in *lem_in)
+{
+	t_bilist *tmp;
+
+	while (lem_in->rooms)
+	{
+		tmp = lem_in->rooms;
+		free(((t_room*)lem_in->rooms)->name);
+		lem_in->rooms = tmp->next;
+		free(tmp);
+	}
+}
+
 int main()
 {
 	t_lem_in *lem_in;
@@ -36,5 +49,14 @@ int main()
 	lem_in = init_lem_in();
 	parsing_input(lem_in);
 	ft_printf("Hello, World!\n");
+	while (lem_in->rooms)
+	{
+		ft_printf("%s	%d-%d\n", ((t_room*)lem_in->rooms->content)->name, (
+				(t_room*)lem_in->rooms->content)->coord_x, ((t_room*)
+				lem_in->rooms->content)->coord_y);
+		lem_in->rooms = lem_in->rooms->next;
+	}
+	ft_zafrish(lem_in);
+	free(lem_in);
 	exit(0);
 }
