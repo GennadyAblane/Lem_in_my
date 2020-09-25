@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:11:27 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/24 14:24:46 by ablane           ###   ########.fr       */
+/*   Updated: 2020/09/25 10:58:28 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ char	*ft_search_name(char *line)
 	i = 0;
 	while (line[i] != '-' && line[i] != '\0')
 		i++;
+	if (line[i] == '-' && (line[i + 1] == '-' || line[i + 1] == '\0'))
+		return (NULL);
 	name = ft_strnew(i);
 	if (!name)
 		terminate("ERR_MALC_INIT");
@@ -145,7 +147,7 @@ int 	ft_add_edge(t_lem_in *lem_in, char *line)
 	name2 = ft_search_name(&line[i + 1]);
 	tmp1 = ft_search_name_struct(lem_in->rooms, name1);
 	tmp2 = ft_search_name_struct(lem_in->rooms, name2);
-	if (!tmp1 || !tmp2)
+	if (!tmp1 || !tmp2 || !name1 || !name2)
 		return (1);
 	ft_bilstadd(&tmp1->links, ft_bilstnew(tmp2, sizeof(t_room)));
 	ft_bilstadd(&tmp2->links, ft_bilstnew(tmp1, sizeof(t_room)));
@@ -216,6 +218,14 @@ void	ft_check_list_name_room(t_bilist *this, t_bilist *tmp)
 	}
 }
 
+void	ft_check_limits(t_room *room, int *start, int *end)
+{
+	if (room->is_start)
+		*start = 1;
+	if (room->is_end)
+		*end = 1;
+}
+
 int		check_start_and_end(t_lem_in *lem_in)
 {
 	int start;
@@ -229,10 +239,9 @@ int		check_start_and_end(t_lem_in *lem_in)
 		return (0);
 	this = lem_in->rooms;
 	tmp = this->next;
-	ft_check_start_end((t_room*)this->content, &start, &end);
 	while (this->next)
 	{
-		ft_check_start_end((t_room*)tmp->content, &start, &end);
+		ft_check_limits((t_room*)tmp->content, &start, &end);
 		ft_check_list_name_room(this, tmp);
 		this = this->next;
 		tmp = this->next;
