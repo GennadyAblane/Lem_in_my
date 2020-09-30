@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esnowpea <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ablane <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/11 18:40:28 by esnowpea          #+#    #+#             */
-/*   Updated: 2020/07/27 16:10:38 by esnowpea         ###   ########.fr       */
+/*   Created: 2019/09/13 10:05:26 by ablane            #+#    #+#             */
+/*   Updated: 2020/01/22 17:50:20 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,26 @@
 
 char	*ft_strsub(char const *s, unsigned int start, size_t len)
 {
-	char	*str;
+	char	*new;
 	size_t	i;
 
-	if (s)
+	i = 0;
+	if (!s || (len == (size_t)(-1)))
+		return (NULL);
+	new = (char *)malloc(sizeof(char) * len + 1);
+	if (!new)
+		return (NULL);
+	while (i < len && s[start + i] != '\0')
 	{
-		if ((size_t)start + len > ft_strlen(s))
-			return (0);
-		str = (char*)malloc(sizeof(char) * (len + 1));
-		if (!str)
-			return (0);
-		i = (size_t)start;
-		while (i < (size_t)start + len)
-		{
-			str[i - (size_t)start] = s[i];
-			i++;
-		}
-		str[i - (size_t)start] = '\0';
-		return (str);
+		new[i] = s[start + i];
+		i++;
 	}
-	return (0);
+	while (i < len)
+	{
+		new[i] = '\0';
+		i++;
+	}
+	if (i == len)
+		new[i] = '\0';
+	return (new);
 }

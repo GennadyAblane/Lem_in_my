@@ -34,6 +34,8 @@ t_room			*new_room(char *name, int x, int y)
 {
 	t_room		*room;
 
+	if (!name)
+		terminate("ERR_BAD_ROOMS");
 	if (!(room = (t_room*)ft_memalloc(sizeof(t_room))))
 		terminate(ERR_MALC_INIT);
 	room->name = name;

@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:11:27 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/25 10:58:28 by ablane           ###   ########.fr       */
+/*   Updated: 2020/09/30 17:31:26 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,18 +79,12 @@ void	ft_add_coordinate(t_room *room, char *line, int i)
 	while (line[i] != ' ' && line[i] != '\0')
 		i++;
 	if (line[i] == '\0')
-	{
-		room->name = ft_free_line(room->name);
-		return ;
-	}
+		terminate("ERR_NON_COORD");
 	i = ft_search_coordin(i, line);
 	room->coord_x = ft_atoi(&line[i]);
 	i = ft_search_coordin(i, line);
 	if (line[i] == '\0')
-	{
-		room->name = ft_free_line(room->name);
-		return ;
-	}
+		terminate("ERR_NON_COORD");
 	room->coord_y = ft_atoi(&line[i]);
 }
 
@@ -130,6 +124,25 @@ t_room *ft_search_name_struct(t_bilist *room, char *name)
 	return (NULL);
 }
 
+int		ft_clear_name_tmp(t_room *tmp1, t_room *tmp2, char *n1, char *n2)
+{
+	if (n1)
+		n1 = ft_free_line(n1);
+	if (n2)
+		n2 = ft_free_line(n2);
+	if (tmp1)
+	{
+		free(tmp1);
+		tmp1 = NULL;
+	}
+	if (tmp1)
+	{
+		free(tmp2);
+		tmp2 = NULL;
+	}
+	return (1);
+}
+
 int 	ft_add_edge(t_lem_in *lem_in, char *line)
 {
 	char *name1;
@@ -148,7 +161,9 @@ int 	ft_add_edge(t_lem_in *lem_in, char *line)
 	tmp1 = ft_search_name_struct(lem_in->rooms, name1);
 	tmp2 = ft_search_name_struct(lem_in->rooms, name2);
 	if (!tmp1 || !tmp2 || !name1 || !name2)
-		return (1);
+		return (ft_clear_name_tmp(tmp1, tmp2, name1, name2));
+	name1 = ft_free_line(name1);
+	name2 = ft_free_line(name2);
 	ft_bilstadd(&tmp1->links, ft_bilstnew(tmp2, sizeof(t_room)));
 	ft_bilstadd(&tmp2->links, ft_bilstnew(tmp1, sizeof(t_room)));
 	return (1);
@@ -160,7 +175,7 @@ void	ft_start_end(t_room *room, int start)
 		return ;
 	if (start == 1)
 		room->is_start = 1;
-	else
+	if (start == 2)
 		room->is_end = 1;
 }
 
@@ -192,10 +207,7 @@ void	ft_add_vertex(t_lem_in *lem_in, char **line)
 	room = new_room(ft_add_this_name(*line), 0 , 0);
 	ft_start_end(room, start);
 	ft_add_coordinate(room, *line, 0);
-	if (room->name)
-		ft_bilstadd(&lem_in->rooms, ft_bilstnew(room, sizeof(t_room)));
-	else
-		terminate(ERR_BAD_ROOMS);
+	ft_bilstadd(&(lem_in->rooms), ft_bilstnew(room, sizeof(t_room)));
 }
 
 void	ft_check_start_end(t_room *room, int *start, int *end)
@@ -259,8 +271,11 @@ void	ft_last_chek(int gnl, t_lem_in *lem_in)
 		terminate(ERR_BAD_INPUT);
 }
 
-int		ft_read_edge(t_lem_in *lem_in, char *line, int gnl)
+int		ft_read_edge(t_lem_in *lem_in, int gnl)
 {
+	char	*line;
+
+	line = NULL;
 	while (gnl > 0)
 	{
 		gnl = get_next_line(0, &line);
@@ -269,7 +284,10 @@ int		ft_read_edge(t_lem_in *lem_in, char *line, int gnl)
 		if (ft_strchr(line, '-') || (ft_strchr(line, '#')))
 			ft_add_edge(lem_in, line);
 		else
+		{
+			line = ft_free_line(line);
 			terminate("ERR_BAD_LINKS");
+		}
 		line = ft_free_line(line);
 	}
 	return (gnl);
@@ -284,7 +302,7 @@ void	parsing_input(t_lem_in *lem_in)
 	i = 0;
 	line = NULL;
 	lem_in->ants = ft_ants();
-	while ((gnl = get_next_line(0, &line)) > 0 && i == 0)
+	while (i == 0 && (gnl = get_next_line(0, &line)) > 0)
 	{
 		if ((ft_strchr(line, ' ') || ft_strchr(line, '#'))
 		&& !ft_strchr(line, '-'))
@@ -294,6 +312,6 @@ void	parsing_input(t_lem_in *lem_in)
 		line = ft_free_line(line);
 	}
 	if (gnl > 0)
-		gnl = ft_read_edge(lem_in, line, gnl);
+		gnl = ft_read_edge(lem_in, gnl);
 	ft_last_chek(gnl, lem_in);
 }

@@ -6,11 +6,27 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:46:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/25 11:26:51 by ablane           ###   ########.fr       */
+/*   Updated: 2020/09/30 17:04:48 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <lem_in.h>
+
+void	print_corridor(t_bilist *rooms)
+{
+	t_bilist	*room;
+
+	room = rooms;
+	while (room && room->prev)
+		room = room->prev;
+	while (room)
+	{
+		if (room->content)
+			ft_printf("[%s]%s", ((t_room *) room->content)->name,
+					  room->next ? "->" : "\n");
+		room = room->next;
+	}
+}
 
 void	terminate(char *s)
 {
@@ -49,6 +65,7 @@ int main()
 
 	lem_in = init_lem_in();
 	parsing_input(lem_in);
+	print_corridor(lem_in->rooms);
 	ft_printf("Hello, World!\n");
 	while (lem_in->rooms)
 	{
@@ -61,7 +78,8 @@ int main()
 				  ((t_room*)tmp->links->content)->name);
 		lem_in->rooms = lem_in->rooms->next;
 	}
+
 	ft_zafrish(lem_in);
-	free(lem_in);
+//	free(lem_in);
 	exit(0);
 }
