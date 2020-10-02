@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:11:27 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/30 17:31:26 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/02 14:30:24 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@ char	*ft_add_this_name(char *line)
 	char *name;
 
 	i = 0;
-	if (!line)
-		return (NULL);
 	while (line[i] != ' ' && line[i] != '\0')
 		i++;
 	if (line[i] == '\0' || (!(name = (char *)malloc(sizeof(char) * i + 1))))
@@ -97,7 +95,10 @@ char	*ft_search_name(char *line)
 	while (line[i] != '-' && line[i] != '\0')
 		i++;
 	if (line[i] == '-' && (line[i + 1] == '-' || line[i + 1] == '\0'))
-		return (NULL);
+	{
+		line = ft_free_line(line);
+		terminate("ERR_BAD_LINKS");
+	}
 	name = ft_strnew(i);
 	if (!name)
 		terminate("ERR_MALC_INIT");
@@ -161,7 +162,7 @@ int 	ft_add_edge(t_lem_in *lem_in, char *line)
 	tmp1 = ft_search_name_struct(lem_in->rooms, name1);
 	tmp2 = ft_search_name_struct(lem_in->rooms, name2);
 	if (!tmp1 || !tmp2 || !name1 || !name2)
-		return (ft_clear_name_tmp(tmp1, tmp2, name1, name2));
+		terminate("ERR_BAD_LINKS");
 	name1 = ft_free_line(name1);
 	name2 = ft_free_line(name2);
 	ft_bilstadd(&tmp1->links, ft_bilstnew(tmp2, sizeof(t_room)));
@@ -181,8 +182,17 @@ void	ft_start_end(t_room *room, int start)
 
 char	*ft_search_name_for_start_end(char *line)
 {
+	int i;
+
+	i = 0;
+	if (ft_strequ(line, "##start") || ft_strequ(line, "##end"))
+		i = 1;
 	while (line && ft_strlen(line) > 0 && line[0] == '#')
+	{
 		line = ft_next_gnl(line);
+		if ((ft_strequ(line, "##start") || ft_strequ(line, "##end")) && i == 1)
+			return (ft_free_line(line));
+	}
 	return (line);
 }
 
@@ -204,6 +214,10 @@ void	ft_add_vertex(t_lem_in *lem_in, char **line)
 			return ;
 		*line = ft_search_name_for_start_end(*line);
 	}
+	if (!*line)
+		return ;
+	if (*line && *line[0] == 'L')
+		terminate("ERR_BAD_BIG_L");
 	room = new_room(ft_add_this_name(*line), 0 , 0);
 	ft_start_end(room, start);
 	ft_add_coordinate(room, *line, 0);
@@ -220,13 +234,21 @@ void	ft_check_start_end(t_room *room, int *start, int *end)
 
 void	ft_check_list_name_room(t_bilist *this, t_bilist *tmp)
 {
+	int x;
+	int y;
+
+	x = ((t_room*)this->content)->coord_x;
+	y = ((t_room*)this->content)->coord_y;
 	while (tmp)
 	{
-		if (!(ft_strequ(((t_room*)this->content)->name,
-			((t_room*)tmp->content)->name)))
-			tmp = tmp->next;
-		else
+		if ((ft_strequ(((t_room*)this->content)->name,
+		((t_room*)tmp->content)->name)))
 			terminate("ERR_BAD_ROOMS");
+		else if (((t_room*)tmp->content)->coord_y == y &&
+		((t_room*)tmp->content)->coord_x == x)
+			terminate("ERR_BAD_COORD");
+		else
+			tmp = tmp->next;
 	}
 }
 
