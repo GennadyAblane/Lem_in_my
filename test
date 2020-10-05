@@ -29,7 +29,7 @@ end 12 132
 room9 8 2
 #iersntie
 start-room1
-room1- -room2
+room1-room2
 room2-room3
 room3-room4
 #ienstrarstien
