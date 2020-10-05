@@ -146,7 +146,7 @@ int		ft_clear_name_tmp(t_room *tmp1, t_room *tmp2, char *n1, char *n2)
 
 int 	ft_add_edge(t_lem_in *lem_in, char *line)
 {
-	char *name1;
+	char *name1; //todo попробовать сделать их не молочными;
 	char *name2;
 	t_room *tmp1;
 	t_room *tmp2;

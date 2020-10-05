@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:46:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/30 17:04:48 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/05 13:25:34 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,8 @@ int main()
 				  ((t_room*)tmp->links->content)->name);
 		lem_in->rooms = lem_in->rooms->next;
 	}
-
-	ft_zafrish(lem_in);
+	print_result(lem_in->ants, lem_in->solutions);
+//	ft_zafrish(lem_in);
 //	free(lem_in);
 	exit(0);
 }

@@ -43,5 +43,6 @@ t_room					*new_room(char *name, int x, int y);
 //void					add_corridor(t_bilist *corridor, t_bilist **corridors);
 char					*ft_free_line(char *line);
 char					*ft_next_gnl(char *line);
+void					print_result(int ants, t_bilist *solution);
 
 #endif //LEM_IN_H
