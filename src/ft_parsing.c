@@ -324,6 +324,8 @@ void	parsing_input(t_lem_in *lem_in)
 	i = 0;
 	line = NULL;
 	lem_in->ants = ft_ants();
+	if (lem_in->ants < 1)
+		terminate(ERR_ANTS_PARC);
 	while (i == 0 && (gnl = get_next_line(0, &line)) > 0)
 	{
 		if ((ft_strchr(line, ' ') || ft_strchr(line, '#'))
