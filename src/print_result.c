@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 13:27:11 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/06 18:12:11 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/07 15:07:08 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,83 +101,179 @@
 //	}
 //}
 
-void	ft_step_ants2(t_bilist *solution)
+size_t	ft_count_len_corridor(t_bilist *cor)
 {
-	t_bilist *tmp;
-
-	tmp = (t_bilist*)solution->content;
-	while (tmp->next)
-		tmp = tmp->next;
-	while (tmp->prev)
-	{
-		if (tmp->content_size && tmp->next)
-		{
-			tmp->next->content_size = tmp->content_size;
-			tmp->content_size = 0;
-		}
-		tmp = tmp->prev;
-	}
-}
-
-void	ft_step_ants(t_bilist *solution)
-{
-	t_bilist *tmp;
-
-	tmp = solution;
-	 while (tmp)
-	 {
-	 	ft_step_ants2(tmp);
-	 	tmp = tmp->next;
-	 }
-}
-
-int		ft_next_step(int ants, int an, t_bilist *solution)
-{
-	t_bilist	*tmp_sol;
-	t_bilist	*tmp;
-	int			n;
-
-	n = ants - an + 1;
-	ft_step_ants(solution);
-	tmp_sol = solution;
-	while (tmp_sol)
-	{
-		tmp = (t_bilist*) solution;
-		tmp->content_size = n++;
-		an--;
-		tmp_sol = tmp_sol->next;
-	}
-	return (an);
-}
-
-int		ft_last_step_of_solution(t_bilist *solution)
-{
-	t_bilist *tmp;
-	int i;
+	size_t	i;
 
 	i = 0;
-	tmp = solution;
-	while (tmp)
+	while (cor)
 	{
-		while (tmp->content)
-		tmp = tmp->next;
+		cor = cor->next;
+		i++;
 	}
 	return (i);
 }
 
+size_t	ft_one_solution_add_ants(t_bilist *sol, size_t an)
+{
+	sol->content_size = sol->content_size + an;
+	an = 0;
+	return (an);
+}
+
+void	ft_add_ants_solution(t_bilist *solution, int ants)
+{
+	t_bilist *tmp;
+	size_t	an;
+
+	an = (size_t)ants;
+	while (an)
+	{
+		tmp = solution;
+		while (tmp)
+		{
+			if (!tmp->next && !tmp->prev)
+				an = ft_one_solution_add_ants(tmp, an);
+			if (tmp->next && tmp->content_size <= tmp->next->content_size && an)
+			{
+				tmp->content_size++;
+				an--;
+			}
+			if (tmp->prev && tmp->content_size < tmp->prev->content_size && an)
+			{
+				tmp->content_size++;
+				an--;
+			}
+			tmp = tmp->next;
+		}
+	}
+}
+
+void	ft_subtract_len_corridor_content_size(t_bilist *solution)
+{
+	t_bilist *tmp;
+
+	tmp = solution;
+	while (tmp)
+	{
+		tmp->content_size -= ft_count_len_corridor((t_bilist*)tmp);
+		tmp = tmp->next;
+	}
+}
+
+void	ft_start_ants_first_room(t_bilist *solution, int ants)
+{
+	t_bilist *tmp;
+
+	tmp = solution;
+	while (tmp)
+	{
+		tmp->content_size = ft_count_len_corridor((t_bilist*)tmp->content);
+		tmp = tmp->next;
+	}
+	ft_add_ants_solution(solution, ants);
+	ft_subtract_len_corridor_content_size(solution);
+}
+
+void	ft_step_ants_corridor(t_bilist *cor, size_t *num_ant, int ants)
+{
+	t_bilist *tmp;
+
+	tmp = (t_bilist*)cor->content;
+	while (tmp->next)
+		tmp = tmp->next;
+	while (tmp->prev)
+	{
+		tmp->content_size = tmp->prev->content_size;
+		tmp->prev->content_size = 0;
+		tmp = tmp->prev;
+	}
+	if (cor->content_size && *num_ant <= (size_t)ants)
+	{
+		tmp->content_size = *num_ant;
+		*num_ant = *num_ant + 1;
+		cor->content_size--;
+	}
+}
+
+int		ft_chek_solution_room_for_ants(t_bilist *solution, size_t an)
+{
+	t_bilist *tmp;
+	t_bilist *cor;
+
+	if (an)
+		return (1);
+	tmp = solution;
+	while (tmp)
+	{
+		if(tmp->content_size)
+			return (1);
+		cor = (t_bilist*)tmp->content;
+		while (cor)
+		{
+			if (cor->content_size)
+				return (1);
+			cor = cor->next;
+		}
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int		ft_step_ants_room(t_bilist *solution, int *ant, int ants)
+{
+	t_bilist	*tmp;
+	size_t		an;
+
+	an = *ant;
+	tmp = solution;
+	while (tmp)
+	{
+		ft_step_ants_corridor(tmp, &an, ants);
+		tmp = tmp->next;
+	}
+	*ant = an;
+	return (ft_chek_solution_room_for_ants(solution, an));
+}
+
+void	print_current_position_ants(t_bilist *solution)
+{
+	t_bilist *tmp;
+	t_bilist *cor;
+
+	tmp = solution;
+	while (tmp)
+	{
+		cor = (t_bilist*)tmp->content;
+		while (cor)
+		{
+			if(cor->content_size)
+			{
+				ft_printf("L%d-%s", cor->content_size, (char*)cor->content);
+				if(cor->next && cor->next->content_size)
+				{
+					ft_printf(" ");
+				}
+			}
+			cor = cor->next;
+		}
+		tmp = tmp->next;
+	}
+}
+
 void	print_result(int ants, t_bilist *solution)
 {
-	int	an;
+	int j;
+	int	ant;
 
-	an = ants;
-	while (an > 0)
+	j = 1;
+	ant = 1;
+	ft_start_ants_first_room(solution, ants);
+	while (j > 0)
 	{
-		an = ft_next_step(ants, an, solution);
-		print_current_position_ants(solution);
-	}
-	while (ft_last_step_of_solution(solution))
-	{
-
+		j = ft_step_ants_room(solution, &ant, ants);
+		if (ant > ants + 1)
+			terminate("WTF?!"); //todo такого быть не должно!
 		print_current_position_ants(solution);
 	}
 }

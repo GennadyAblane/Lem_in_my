@@ -22,10 +22,10 @@ char	*ft_free_line(char *line)
 	return (line);
 }
 
-char	*ft_next_gnl(char *line)
+char	*ft_next_gnl(char *line, int fd)
 {
 	line = ft_free_line(line);
-	if (get_next_line(0, &line) > 0)
+	if (get_next_line(fd, &line) > 0)
 		return (line);
 	return (NULL);
 }

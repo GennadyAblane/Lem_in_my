@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 14:11:38 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/22 12:15:05 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/07 15:21:13 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include "libft.h"
 # include "ft_printf.h"
 # include "error_message.h"
+#include <fcntl.h>
 
 typedef struct			s_room
 {
@@ -36,13 +37,13 @@ typedef struct			s_lem_in
 
 void					terminate(char *s);
 t_lem_in				*init_lem_in();
-void					parsing_input(t_lem_in *lem_in);
+void					parsing_input(t_lem_in *lem_in, int fd);
 t_room					*new_room(char *name, int x, int y);
 //void					del_node(void *content, size_t content_size);
 //void					find_solution(t_lem_in *lem_in);
 //void					add_corridor(t_bilist *corridor, t_bilist **corridors);
 char					*ft_free_line(char *line);
-char					*ft_next_gnl(char *line);
+char					*ft_next_gnl(char *line, int fd);
 void					print_result(int ants, t_bilist *solution);
 
 #endif //LEM_IN_H

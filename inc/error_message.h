@@ -6,7 +6,7 @@
 /*   By: esnowpea <esnowpea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/15 14:31:59 by esnowpea          #+#    #+#             */
-/*   Updated: 2020/10/02 13:45:48 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/07 16:59:06 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,6 @@
 # define ERR_TREADS			"ERROR: There is a problem with threads"
 # define ERR_BAD_COORD		"ERROR: There is a problem with coordinate"
 # define ERR_BAD_BIG_L		"ERROR: Impossible name for a room"
+# define ERR_BAD_MAP		"ERROR: Map data error"
 
 #endif

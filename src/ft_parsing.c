@@ -6,13 +6,13 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:11:27 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/02 14:35:04 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/07 15:21:13 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lem_in.h"
 
-int		ft_ants()
+int		ft_ants(int fd)
 {
 	char	*line;
 	int		ants;
@@ -21,7 +21,7 @@ int		ft_ants()
 	i = 0;
 	ants = 0;
 	line = NULL;
-	while (get_next_line(0, &line) > 0 && line && line[i] == '#')
+	while (get_next_line(fd, &line) > 0 && line && line[i] == '#')
 		line = ft_free_line(line);
 	while (line && line[i] != '\0')
 	{
@@ -125,25 +125,6 @@ t_room *ft_search_name_struct(t_bilist *room, char *name)
 	return (NULL);
 }
 
-int		ft_clear_name_tmp(t_room *tmp1, t_room *tmp2, char *n1, char *n2)
-{
-	if (n1)
-		n1 = ft_free_line(n1);
-	if (n2)
-		n2 = ft_free_line(n2);
-	if (tmp1)
-	{
-		free(tmp1);
-		tmp1 = NULL;
-	}
-	if (tmp1)
-	{
-		free(tmp2);
-		tmp2 = NULL;
-	}
-	return (1);
-}
-
 int 	ft_add_edge(t_lem_in *lem_in, char *line)
 {
 	char *name1; //todo попробовать сделать их не молочными;
@@ -153,6 +134,8 @@ int 	ft_add_edge(t_lem_in *lem_in, char *line)
 	int i;
 
 	i = 0;
+	if (line && line[i] == '\0')
+		return (1);
 	if (line && ft_strlen(line) > 1 && line[0] == '#')
 		return (1);
 	name1 = ft_search_name(line);
@@ -180,7 +163,7 @@ void	ft_start_end(t_room *room, int start)
 		room->is_end = 1;
 }
 
-char	*ft_search_name_for_start_end(char *line)
+char	*ft_search_name_for_start_end(char *line , int fd)
 {
 	int i;
 
@@ -189,14 +172,14 @@ char	*ft_search_name_for_start_end(char *line)
 		i = 1;
 	while (line && ft_strlen(line) > 0 && line[0] == '#')
 	{
-		line = ft_next_gnl(line);
+		line = ft_next_gnl(line, fd);
 		if ((ft_strequ(line, "##start") || ft_strequ(line, "##end")) && i == 1)
 			return (ft_free_line(line));
 	}
 	return (line);
 }
 
-void	ft_add_vertex(t_lem_in *lem_in, char **line)
+void	ft_add_vertex(t_lem_in *lem_in, char **line, int fd)
 {
 	int len;
 	int start;
@@ -212,7 +195,7 @@ void	ft_add_vertex(t_lem_in *lem_in, char **line)
 			start = 2;
 		else
 			return ;
-		*line = ft_search_name_for_start_end(*line);
+		*line = ft_search_name_for_start_end(*line, fd);
 	}
 	if (!*line)
 		return ;
@@ -293,15 +276,15 @@ void	ft_last_chek(int gnl, t_lem_in *lem_in)
 		terminate(ERR_BAD_INPUT);
 }
 
-int		ft_read_edge(t_lem_in *lem_in, int gnl)
+int		ft_read_edge(t_lem_in *lem_in, int gnl, int fd)
 {
 	char	*line;
 
 	line = NULL;
 	while (gnl > 0)
 	{
-		gnl = get_next_line(0, &line);
-		if (gnl < 1)
+		gnl = get_next_line(fd, &line);
+		if (gnl < 1 || line[0] == '\0')
 			break ;
 		if (ft_strchr(line, '-') || (ft_strchr(line, '#')))
 			ft_add_edge(lem_in, line);
@@ -315,7 +298,7 @@ int		ft_read_edge(t_lem_in *lem_in, int gnl)
 	return (gnl);
 }
 
-void	parsing_input(t_lem_in *lem_in)
+void	parsing_input(t_lem_in *lem_in, int fd)
 {
 	char	*line;
 	int		gnl;
@@ -323,19 +306,19 @@ void	parsing_input(t_lem_in *lem_in)
 
 	i = 0;
 	line = NULL;
-	lem_in->ants = ft_ants();
+	lem_in->ants = ft_ants(fd);
 	if (lem_in->ants < 1)
 		terminate(ERR_ANTS_PARC);
-	while (i == 0 && (gnl = get_next_line(0, &line)) > 0)
+	while (i == 0 && (gnl = get_next_line(fd, &line)) > 0)
 	{
 		if ((ft_strchr(line, ' ') || ft_strchr(line, '#'))
 		&& !ft_strchr(line, '-'))
-			ft_add_vertex(lem_in, &line);
+			ft_add_vertex(lem_in, &line, fd);
 		else
 			i = ft_add_edge(lem_in, line);
 		line = ft_free_line(line);
 	}
 	if (gnl > 0)
-		gnl = ft_read_edge(lem_in, gnl);
+		gnl = ft_read_edge(lem_in, gnl, fd);
 	ft_last_chek(gnl, lem_in);
 }
