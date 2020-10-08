@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 14:11:38 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/07 15:21:13 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/08 15:15:31 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 # include "libft.h"
 # include "ft_printf.h"
 # include "error_message.h"
-#include <fcntl.h>
+# include <fcntl.h>
 
 typedef struct			s_room
 {

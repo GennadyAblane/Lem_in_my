@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:46:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/07 17:33:04 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/08 16:52:11 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,7 @@ void	ft_add_line_in_input(const char *line, int fd)
 		terminate(ERR_GNL_READ);
 	if (line && !line[i])
 		terminate(ERR_BAD_MAP);
-	while (line[i])
-		ft_putchar_fd(line[i++], fd);
+	ft_putstr_fd(line, fd);
 	ft_putchar_fd('\n', fd);
 }
 
@@ -80,23 +79,24 @@ void	ft_add_line_in_input(const char *line, int fd)
 //		ft_error_n_exit("Error open file\n", lemin, NULL, NULL);
 //}
 
-int		parsing_input_for_file()
+void	parsing_input_for_file(int *fd, char *file)
 {
-	int		op = O_RDWR;
 	int		gnl;
-	int		fd;
 	char	*line;
 
-	if((fd = open("./input_data.txt", O_RDWR)) < 1)
+	*fd = open(file, O_RDWR | O_TRUNC | O_CREAT, 0777);
+	if (*fd < 0)
 		terminate("FUCKING fd");
 	while ((gnl = get_next_line(0, &line)) > 0)
 	{
-		ft_add_line_in_input(line, fd);
+		ft_add_line_in_input(line, *fd);
 		line = ft_free_line(line);
 	}
-	if	(gnl < 1)
+	if (*fd > 1)
+		close(*fd);
+	*fd = open(file, O_RDONLY, 0777);
+	if	(gnl < 0)
 		terminate(ERR_GNL_READ);
-	return (fd);
 }
 
 int		main()
@@ -105,11 +105,11 @@ int		main()
 	t_room		*tmp;
 	int			fd;
 
+	fd = 0;
 	lem_in = init_lem_in();
-	fd = parsing_input_for_file();
+	parsing_input_for_file(&fd, "../input_data.txt");
 	parsing_input(lem_in, fd);
 	print_corridor(lem_in->rooms);
-	ft_printf("Hello, World!\n");
 	while (lem_in->rooms)
 	{
 		tmp = ((t_room*)lem_in->rooms->content);
@@ -121,6 +121,8 @@ int		main()
 				  ((t_room*)tmp->links->content)->name);
 		lem_in->rooms = lem_in->rooms->next;
 	}
+	//todo print fd;
+	close(fd);
 	print_result(lem_in->ants, lem_in->solutions);
 //	ft_zafrish(lem_in);
 //	free(lem_in);
