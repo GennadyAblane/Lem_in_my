@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free.c                                          :+:      :+:    :+:   */
+/*   terminate.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: esnowpea <esnowpea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/09/21 15:03:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/24 14:08:34 by ablane           ###   ########.fr       */
+/*   Created: 2020/08/31 16:12:26 by esnowpea          #+#    #+#             */
+/*   Updated: 2020/09/04 16:34:00 by esnowpea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lem_in.h"
 
-char	*ft_free_line(char *line)
+void	terminate(char *s)
 {
-	if (line)
-	{
-		free(line);
-		line = NULL;
-	}
-	return (line);
+	ft_putendl_fd(s, 2);
+	exit(0);
 }
 
-char	*ft_next_gnl(char *line, int fd)
+void	del_node(void *content, size_t content_size)
 {
-	line = ft_free_line(line);
-	if (get_next_line(fd, &line) > 0)
-		return (line);
-	return (NULL);
+	(void)content;
+	(void)content_size;
 }

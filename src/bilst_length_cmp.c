@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free.c                                          :+:      :+:    :+:   */
+/*   bilst_length_cmp.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: esnowpea <esnowpea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/09/21 15:03:40 by ablane            #+#    #+#             */
-/*   Updated: 2020/09/24 14:08:34 by ablane           ###   ########.fr       */
+/*   Created: 2020/09/05 13:42:09 by esnowpea          #+#    #+#             */
+/*   Updated: 2020/09/05 13:51:26 by esnowpea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lem_in.h"
 
-char	*ft_free_line(char *line)
+int			bilst_length_cmp(void *a, void *b)
 {
-	if (line)
-	{
-		free(line);
-		line = NULL;
-	}
-	return (line);
-}
+	t_bilist *ptr1;
+	t_bilist *ptr2;
 
-char	*ft_next_gnl(char *line, int fd)
-{
-	line = ft_free_line(line);
-	if (get_next_line(fd, &line) > 0)
-		return (line);
-	return (NULL);
+	ptr1 = (t_bilist*)a;
+	ptr2 = (t_bilist*)b;
+	if (ft_bilstlength(&ptr1) < ft_bilstlength(&ptr2))
+		return (1);
+	return (0);
 }

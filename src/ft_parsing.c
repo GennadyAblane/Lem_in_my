@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 15:11:27 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/08 16:50:12 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/09 15:39:40 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,12 +235,36 @@ void	ft_check_list_name_room(t_bilist *this, t_bilist *tmp)
 	}
 }
 
-void	ft_check_limits(t_room *room, int *start, int *end)
+void	ft_check_limits(t_lem_in *lem_in, t_bilist *room, int *start, int *end)
 {
-	if (room->is_start)
-		*start = 1;
-	if (room->is_end)
-		*end = 1;
+	int st;
+	int en;
+
+	st = *start;
+	en = *end;
+	if (((t_room*)room->content)->is_start == 1)
+	{
+		lem_in->start_room = room->content;
+		st++;
+	}
+	if (((t_room*)room->content)->is_end == 1)
+	{
+		lem_in->end_room = room->content;
+		en++;
+	}
+	*start = st;
+	*end = en;
+}
+
+int			find_corridor_pars(t_lem_in *lem_in)
+{
+	t_bilist	*corridor;
+
+	find_parant(lem_in->start_room, 0);
+	if (!(corridor = find_short_corridor(lem_in->end_room)))
+		return (0);
+	ft_bilstadd(&lem_in->solutions, ft_bilstnew(ft_bilstnew(corridor, 0), 0));
+	return (1);
 }
 
 int		check_start_and_end(t_lem_in *lem_in)
@@ -258,14 +282,14 @@ int		check_start_and_end(t_lem_in *lem_in)
 	tmp = this->next;
 	while (this->next)
 	{
-		ft_check_limits((t_room*)tmp->content, &start, &end);
+		ft_check_limits(lem_in, tmp, &start, &end);
 		ft_check_list_name_room(this, tmp);
 		this = this->next;
 		tmp = this->next;
 	}
-	if (!start || !end)
+	if (start != 1 || end != 1)
 		return (0);
-	return (1);
+	return (find_corridor_pars(lem_in));
 }
 
 void	ft_last_chek(int gnl, t_lem_in *lem_in)
@@ -274,6 +298,7 @@ void	ft_last_chek(int gnl, t_lem_in *lem_in)
 		terminate(ERR_GNL_READ);
 	if (!check_start_and_end(lem_in))
 		terminate(ERR_BAD_INPUT);
+
 }
 
 int		ft_read_edge(t_lem_in *lem_in, int gnl, int fd)

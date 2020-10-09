@@ -6,7 +6,7 @@
 #    By: ablane <ablane@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/09/22 12:08:57 by ablane            #+#    #+#              #
-#    Updated: 2020/09/22 12:11:47 by ablane           ###   ########.fr        #
+#    Updated: 2020/10/09 13:53:56 by ablane           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,8 +36,11 @@ HEADERS = $(addprefix $(HEADERS_DIR), $(HEADERS_LIST))
 
 SRC_DIR = src/
 SRC_LIST =	main.c \
+			init.c \
+			terminate.c \
 			ft_parsing.c \
 			print_result.c \
+			find_solutions.c \
 			ft_free.c
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_LIST))
