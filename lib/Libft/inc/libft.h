@@ -6,7 +6,7 @@
 /*   By: esnowpea <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/06 15:22:49 by esnowpea          #+#    #+#             */
-/*   Updated: 2020/09/04 15:49:44 by esnowpea         ###   ########.fr       */
+/*   Updated: 2020/10/13 16:04:42 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,6 @@ void				ft_putnbr_fd(int n, int fd);
 
 t_bilist			*ft_bilstnew(void const *content, size_t content_size);
 void				ft_bilstdelone(t_bilist **alst, void (*del)(void*, size_t));
-void				ft_bilstdelone_back(t_bilist **alst,
-					void (*del)(void*, size_t));
 void				ft_bilstdel(t_bilist **alst, void (*del)(void*, size_t));
 void				ft_bilstadd(t_bilist **alst, t_bilist *new);
 void				ft_bilstadd_back(t_bilist **alst, t_bilist *new);

@@ -6,99 +6,62 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/25 15:39:41 by ablane            #+#    #+#             */
-/*   Updated: 2020/07/27 16:12:05 by esnowpea         ###   ########.fr       */
+/*   Updated: 2020/10/13 16:04:42 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*ft_cpline(char **ost, size_t n)
+static char			*ft_str_add(char **str)
 {
-	char	*op;
+	char	*n_ptr;
 	char	*tmp;
-	size_t	i;
-	ssize_t p;
+	char	*line;
+	size_t	b;
 
-	i = 0;
-	if ((*ost)[i] == '\n')
-		op = ft_strnew(0);
-	else if ((*ost)[i] == '\0')
-		return (NULL);
-	else
-	{
-		op = ft_strnew(n);
-		while (i < n)
-		{
-			op[i] = (*ost)[i];
-			i++;
-		}
-	}
-	n++;
-	p = (ft_strlen(*ost) - n);
-	tmp = ft_strsub(*ost, n, p);
-	free(*ost);
-	(*ost) = tmp;
-	return (op);
+	n_ptr = ft_strchr(*str, '\n');
+	if (n_ptr)
+		*n_ptr = '\0';
+	line = ft_strdup(*str);
+	b = n_ptr ? 1 : 0;
+	tmp = ft_strdup(ft_strchr(*str, '\0') + b);
+	ft_strdel(str);
+	*str = tmp;
+	return (line);
 }
 
-int			ft_redjoin(char **ost, int fd)
+static size_t		ft_gnl_del(char **as, size_t n)
 {
-	char	buf[BUFF_SIZE + 1];
-	char	*tmp;
-	ssize_t	res_read;
-
-	res_read = read(fd, buf, BUFF_SIZE);
-	if (res_read < 1)
+	if (as && *as)
 	{
-		if (res_read == 0)
-			return (0);
-		else
-			return (-1);
+		free(*as);
+		*as = NULL;
 	}
-	buf[res_read] = '\0';
-	tmp = ft_strjoin(*ost, buf);
-	free(*ost);
-	*ost = tmp;
-	return (1);
+	return (n);
 }
 
-int			ft_job(const int fd, char **line, char **ost)
+int					get_next_line(const int fd, char **line)
 {
-	ssize_t	n;
-	ssize_t res_read;
+	static char	*str[OPEN_MAX];
+	char		*tmp;
+	char		buf[BUFF_SIZE + 1];
+	ssize_t		res;
 
-	res_read = 1;
-	n = 0;
-	while ((*ost)[n] != '\n' && res_read > 0)
-	{
-		if ((*ost)[n] == '\0')
-		{
-			if ((res_read = ft_redjoin(ost, fd)) < 1)
-			{
-				if ((*ost)[0] != '\0')
-				{
-					*line = (ft_cpline(ost, n));
-					return (1);
-				}
-				ft_strdel(ost);
-				return (res_read);
-			}
-			n--;
-		}
-		n++;
-	}
-	*line = (ft_cpline(ost, n));
-	return (1);
-}
-
-int			get_next_line(const int fd, char **line)
-{
-	static char *ost[4864];
-
-	if (fd < 0 || !line || BUFF_SIZE < 1 ||
-		(read(fd, NULL, 0)) < 0 || (fd > OPEN_MAX))
+	if (fd < 0 || !line || fd > OPEN_MAX || BUFF_SIZE <= 0)
 		return (-1);
-	if (!ost[fd])
-		ost[fd] = ft_strnew(0);
-	return (ft_job(fd, line, &ost[fd]));
+	if (!str[fd])
+		str[fd] = ft_strnew(0);
+	while (!(ft_strchr(str[fd], '\n')) && (res = read(fd, buf, BUFF_SIZE)))
+	{
+		if (res == -1)
+			return (ft_gnl_del(&str[fd], -1));
+		buf[res] = '\0';
+		tmp = ft_strjoin(str[fd], buf);
+		ft_strdel(&str[fd]);
+		str[fd] = tmp;
+	}
+	if (*str[fd] == '\0')
+		return (ft_gnl_del(&str[fd], 0));
+	*line = ft_str_add(&str[fd]);
+	return (1);
 }

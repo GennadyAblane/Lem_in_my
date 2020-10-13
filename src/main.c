@@ -108,7 +108,7 @@ int		main()
 //	}
 	//todo print fd;
 	close(fd);
-	print_result(lem_in->ants, lem_in->solutions);
+	print_result(lem_in->ants, lem_in);
 //	ft_zafrish(lem_in);
 //	free(lem_in);
 	exit(0);

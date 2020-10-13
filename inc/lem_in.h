@@ -48,7 +48,7 @@ t_bilist				*find_short_corridor(t_room *end_room);
 void					terminate(char *s);
 void					find_solution(t_lem_in *lem_in);
 void					parsing_input(t_lem_in *lem_in, int fd);
-void					print_result(int ants, t_bilist *solution);
+void					print_result(int ants, t_lem_in *lem_in);
 void					del_node(void *content, size_t content_size);
 void					find_parant(t_room *start, t_bilist *dont_visit);
 void					add_corridor(t_bilist *corridor, t_bilist **corridors);

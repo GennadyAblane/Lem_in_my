@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 13:27:11 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/09 15:57:16 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/13 18:59:51 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void	ft_subtract_len_corridor_content_size(t_bilist *solution)
 	tmp = solution;
 	while (tmp)
 	{
-		tmp->content_size -= ft_count_len_corridor((t_bilist*)tmp);
+		tmp->content_size -= ft_count_len_corridor((t_bilist*)tmp->content);
 		tmp = tmp->next;
 	}
 }
@@ -196,12 +196,12 @@ void	ft_step_ants_corridor(t_bilist *cor, size_t *num_ant, int ants)
 	}
 }
 
-int		ft_chek_solution_room_for_ants(t_bilist *solution, size_t an)
+int		ft_chek_solution_room_for_ants(t_bilist *solution, size_t an, int ants)
 {
 	t_bilist *tmp;
 	t_bilist *cor;
 
-	if (an)
+	if (an <= (size_t) ants)
 		return (1);
 	tmp = solution;
 	while (tmp)
@@ -233,7 +233,7 @@ int		ft_step_ants_room(t_bilist *solution, int *ant, int ants)
 		tmp = tmp->next;
 	}
 	*ant = an;
-	return (ft_chek_solution_room_for_ants(solution, an));
+	return (ft_chek_solution_room_for_ants(solution, an, ants));
 }
 
 int		ft_search_max_len_corridors(t_bilist *solution)
@@ -254,20 +254,45 @@ int		ft_search_max_len_corridors(t_bilist *solution)
 	return (len_max);
 }
 
-int 	ft_print_room(t_bilist *cor, int i, int n)
+int		ft_search_for_next_print(t_bilist *start, int ant)
 {
+	t_bilist *tmp;
+// todo  найти, есть ли ещё муравьи в этой части печати после этого;
+	tmp = start;
+	while (tmp && tmp->content_size != ant)
+		tmp = tmp->next;
+	tmp = tmp->next;
+	while (tmp)
+	{
+		if (tmp->content_size)
+			return (1);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+void	ft_print_room(t_bilist *cor, int i, t_bilist *start)
+{
+	char *name;
+	t_room *tmp;
+	int n;
+
+	n = 0;
 	while (cor && n <= i)
 	{
-		if(cor->content_size)
+		if(cor->prev && cor->content_size && n == i)
 		{
-			ft_printf("L%d-%s", cor->content_size, (char*)cor->content);
-			if(cor->next && cor->next->content_size)
+			tmp = (t_room*)cor->content;
+			name = tmp->name;
+			ft_printf("L%d-%s", cor->content_size, name);
+			if((cor->next && cor->next->content_size ||
+			ft_search_for_next_print((t_bilist *)start->content,
+							cor->content_size)))
 				ft_printf(" ");
 		}
 		n++;
 		cor = cor->next;
 	}
-	return (n);
 }
 
 void	print_current_position_ants(t_bilist *solution)
@@ -275,34 +300,97 @@ void	print_current_position_ants(t_bilist *solution)
 	t_bilist *tmp;
 	t_bilist *cor;
 	int i;
-	int n;
 	int max_len;
 
 	i = 0;
-	n = 0;
 	max_len = ft_search_max_len_corridors(solution);
 	tmp = solution;
 	while (tmp && i <= max_len)
 	{
 		cor = (t_bilist*)tmp->content;
-		n = ft_print_room(cor, i, n);
+		ft_print_room(cor, i, tmp);
 		tmp = tmp->next;
-		if (n > i && !tmp)
+		if (i <= max_len && !tmp)
 		{
 			tmp = solution;
 			i++;
 		}
-		n = 0;
 	}
+	ft_printf("\n");
 }
 
-void	print_result(int ants, t_bilist *solution)
+int		find_max_length_corridor(t_bilist *corridors)
+{
+	t_bilist	*corridor;
+	int			k;
+	int			len;
+
+	len = 0;
+	corridor = corridors;
+	while (corridor)
+	{
+		k = ft_bilstlength((t_bilist*)(corridor->content));
+		if (k > len)
+			len = k;
+		corridor = corridor->next;
+	}
+	return (len);
+}
+
+int		find_length_corridor_with_ants(int ants, t_bilist *solution)
+{
+	t_bilist	*corridor;
+	int			n;
+	int			max_len;
+
+	max_len = find_max_length_corridor(solution);
+	n = ft_bilstlength(solution);
+	corridor = solution;
+	while (corridor)
+	{
+		if (ants > 0)
+			ants -= max_len -
+					ft_bilstlength((t_bilist*)(corridor->content));
+		else
+			return (max_len);
+		corridor = corridor->next;
+	}
+	return (max_len + (ants / n) + (ants % n));
+}
+
+t_bilist	*select_solution(t_lem_in *lem_in)
+{
+	t_bilist	*corridors;
+	t_bilist	*solution;
+	int			k;
+	int			len;
+
+	len = 0;
+	solution = NULL;
+	corridors = lem_in->solutions;
+	while (corridors)
+	{
+		k = find_length_corridor_with_ants(lem_in->ants, corridors->content);
+		if (k < len || len == 0)
+		{
+			len = k;
+			solution = corridors->content;
+		}
+		corridors = corridors->next;
+	}
+	return (solution);
+}
+
+
+void	print_result(int ants, t_lem_in *lem_in)
 {
 	int j;
 	int	ant;
+	t_bilist *solution;
 
 	j = 1;
 	ant = 1;
+	solution = select_solution(lem_in);
 	ft_start_ants_first_room(solution, ants);
 	while (j > 0)
 	{
