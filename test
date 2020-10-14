@@ -1,9 +1,9 @@
-9
+20
 #Here is the number of lines required: 33
 ##start
 Cvw1 2 2
 ##end
-Rpz1 5 5
+end0 5 5
 Pfl0 7 7
 Dvd7 11 11
 Mhl3 12 12
@@ -101,7 +101,7 @@ Xlt9 283 283
 Auo7 284 284
 M_o6 288 288
 Sjc2 290 290
-room3 293 293
+rom3 293 293
 Fhq7 296 296
 Mue8 300 300
 Hrp5 302 302
@@ -120,7 +120,7 @@ Dqq4 341 341
 Avd6 345 345
 Bdi1 349 349
 Hei6 353 353
-room1 356 356
+rom1 356 356
 Hcx1 358 358
 Qri6 362 362
 Xzr4 366 366
@@ -136,7 +136,7 @@ Jua8 396 396
 Ihf7 398 398
 Gmp4 402 402
 Swk5 407 407
-room2 409 409
+rom2 409 409
 Vxz0 412 412
 Hyn6 414 414
 Rtv6 415 415
@@ -180,7 +180,7 @@ Gck7 523 523
 N_z5 526 526
 Ibr1 529 529
 Ypd7 533 533
-room4 536 536
+rom4 536 536
 Gqt8 539 539
 Mqt8 542 542
 Emj6 546 546
@@ -260,7 +260,7 @@ Odm2 748 748
 Zqx7-Pfl0
 Zvf1-Dvd7
 Wzp5-Mhl3
-room3-Uau0
+rom3-Uau0
 X_m3-Aib4
 Nlu8-Arx4
 A_a1-Wgl2
@@ -340,7 +340,7 @@ Pnd4-Mqt8
 Nkc9-Pnd4
 S_w1-Nkc9
 Ypt8-Gqt8
-room4-Ypt8
+rom4-Ypt8
 Ibr1-Ypd7
 W_b9-Vcj7
 Zkd6-N_z5
@@ -352,7 +352,7 @@ I__1-W_p8
 Zcr9-Tlu9
 Xlt9-Zcr9
 Yxh1-Auo7
-room3-Sjc2
+rom3-Sjc2
 Ber3-Mxg4
 Vrz2-Ber3
 Nlu8-Ffh4
@@ -367,9 +367,9 @@ Zng1-Zyi3
 Gcv9-Dqq4
 Avd6-Xfn8
 Bdi1-Avd6
-room1-Hei6
-Cvw1-room1
-Hcx1-Rpz1
+rom1-Hei6
+Cvw1-rom1
+Hcx1-end0
 Jky4-Hcx1
 Qri6-Jky4
 Kng1-Xzr4
@@ -386,8 +386,8 @@ Tld1-Hal1
 Dh_8-Nra5
 Gmp4-Ihf7
 Rtv6-Gmp4
-Cvw1-room2
-room2-Vxz0
+Cvw1-rom2
+rom2-Vxz0
 Vxz0-Hyn6
 Hyn6-Rtv6
 Ihf7-Jua8
@@ -420,8 +420,8 @@ Aep7-Vrz2
 Mxg4-Hrp5
 Hrp5-Mue8
 Mue8-Fhq7
-Fhq7-Rpz1
-Cvw1-room3
+Fhq7-end0
+Cvw1-rom3
 Sjc2-Mlp4
 Mlp4-M_o6
 M_o6-Yxh1
@@ -435,8 +435,8 @@ N_z5-W_b9
 Vcj7-Ibr1
 Ypd7-Gju5
 Gju5-Swk5
-Swk5-Rpz1
-Cvw1-room4
+Swk5-end0
+Cvw1-rom4
 Gqt8-S_w1
 Mqt8-Emj6
 Hv_8-Xzl8
@@ -473,7 +473,7 @@ Uts3-Mkb4
 Mgd6-Hnp3
 Hnp3-Pst2
 Xd_8-Icj4
-Icj4-Rpz1
+Icj4-end0
 Ori8-K_q3
 Zvf1-Qhi3
 Mkk5-Ayd7

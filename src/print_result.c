@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 13:27:11 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/13 18:59:51 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/14 15:38:33 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ void	ft_step_ants_corridor(t_bilist *cor, size_t *num_ant, int ants)
 		tmp->prev->content_size = 0;
 		tmp = tmp->prev;
 	}
-	if (cor->content_size && *num_ant <= (size_t)ants)
+	if (cor->content_size > 0 && *num_ant <= (size_t)ants)
 	{
 		tmp->content_size = *num_ant;
 		*num_ant = *num_ant + 1;
@@ -254,24 +254,58 @@ int		ft_search_max_len_corridors(t_bilist *solution)
 	return (len_max);
 }
 
-int		ft_search_for_next_print(t_bilist *start, int ant)
+int		search_next_print(t_bilist *tmpstart, t_bilist *tmp_cor, int len, int i)
 {
-	t_bilist *tmp;
-// todo  найти, есть ли ещё муравьи в этой части печати после этого;
-	tmp = start;
-	while (tmp && tmp->content_size != ant)
-		tmp = tmp->next;
-	tmp = tmp->next;
-	while (tmp)
+	if (!tmp_cor && tmpstart)
+		tmpstart = tmpstart->next;
+	if (!tmpstart && !tmp_cor && i != len)
+		return (1);
+	if (!tmpstart && !tmp_cor)
+		return (0);
+	while (tmpstart)
 	{
-		if (tmp->content_size)
-			return (1);
-		tmp = tmp->next;
+		if(!tmp_cor)
+			tmp_cor = (t_bilist*)tmpstart->content;
+		while (tmp_cor)
+		{
+			if (tmp_cor->content_size)
+				return (1);
+			tmp_cor = tmp_cor->next;
+		}
+		tmpstart = tmpstart->next;
 	}
 	return (0);
 }
 
-void	ft_print_room(t_bilist *cor, int i, t_bilist *start)
+int		ft_search_for_next_print(t_bilist *start, int ant, int len, int i)
+{
+	t_bilist *tmpstart;
+	t_bilist *tmp_cor;
+
+	tmpstart = start;
+	tmp_cor = NULL;
+	while (tmpstart)
+	{
+		tmp_cor = (t_bilist*)tmpstart->content;
+		while (tmp_cor)
+		{
+			if(tmp_cor->content_size == ant)
+				break ;
+			tmp_cor = tmp_cor->next;
+		}
+		if(!tmp_cor)
+			tmpstart = tmpstart->next;
+		else if (tmp_cor->content_size == ant)
+			break ;
+	}
+	if (tmp_cor)
+		tmp_cor = tmp_cor->next;
+	if (search_next_print(tmpstart, tmp_cor, len, i))
+		return (1);
+	return (0);
+}
+
+void	ft_print_room(t_bilist *cor, int i, t_bilist *start, int len)
 {
 	char *name;
 	t_room *tmp;
@@ -285,9 +319,7 @@ void	ft_print_room(t_bilist *cor, int i, t_bilist *start)
 			tmp = (t_room*)cor->content;
 			name = tmp->name;
 			ft_printf("L%d-%s", cor->content_size, name);
-			if((cor->next && cor->next->content_size ||
-			ft_search_for_next_print((t_bilist *)start->content,
-							cor->content_size)))
+//			if(ft_search_for_next_print(start, cor->content_size, len, i))
 				ft_printf(" ");
 		}
 		n++;
@@ -308,7 +340,7 @@ void	print_current_position_ants(t_bilist *solution)
 	while (tmp && i <= max_len)
 	{
 		cor = (t_bilist*)tmp->content;
-		ft_print_room(cor, i, tmp);
+		ft_print_room(cor, i, tmp, max_len);
 		tmp = tmp->next;
 		if (i <= max_len && !tmp)
 		{
@@ -316,7 +348,6 @@ void	print_current_position_ants(t_bilist *solution)
 			i++;
 		}
 	}
-	ft_printf("\n");
 }
 
 int		find_max_length_corridor(t_bilist *corridors)
@@ -385,9 +416,11 @@ t_bilist	*select_solution(t_lem_in *lem_in)
 void	print_result(int ants, t_lem_in *lem_in)
 {
 	int j;
+	int i;
 	int	ant;
 	t_bilist *solution;
 
+	i = 1;
 	j = 1;
 	ant = 1;
 	solution = select_solution(lem_in);
@@ -398,5 +431,7 @@ void	print_result(int ants, t_lem_in *lem_in)
 		if (ant > ants + 1)
 			terminate("WTF?!"); //todo такого быть не должно!
 		print_current_position_ants(solution);
+		if (i++ != 1)
+			ft_printf("\n");
 	}
 }
