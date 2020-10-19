@@ -6,52 +6,52 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 13:27:11 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/19 12:36:02 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/19 13:18:21 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lem_in.h"
 
-//int		find_max_length_corridor(t_bilist *corridors)
-//{
-//	t_bilist	*corridor;
-//	int			k;
-//	int			len;
+////int		find_max_length_corridor(t_bilist *corridors)
+////{
+////	t_bilist	*corridor;
+////	int			k;
+////	int			len;
+////
+////	len = 0;
+////	corridor = corridors;
+////	while (corridor)
+////	{
+////		k = ft_bilstlength(((t_bilist*)&(corridor->content)));
+////		if (k > len)
+////			len = k;
+////		corridor = corridor->next;
+////	}
+////	return (len);
+////}
 //
-//	len = 0;
-//	corridor = corridors;
-//	while (corridor)
-//	{
-//		k = ft_bilstlength(((t_bilist**)&(corridor->content)));
-//		if (k > len)
-//			len = k;
-//		corridor = corridor->next;
-//	}
-//	return (len);
-//}
+////int		find_length_corridor_with_ants(int ants, t_bilist *solution)
+////{
+////	t_bilist	*corridor;
+////	int			n;
+////	int			max_len;
+////
+////	max_len = find_max_length_corridor(solution);
+////	n = ft_bilstlength(solution);
+////	corridor = solution;
+////	while (corridor)
+////	{
+////		if (ants > 0)
+////			ants -= max_len -
+////					ft_bilstlength(((t_bilist*)&(corridor->content)));
+////		else
+////			return (max_len);
+////		corridor = corridor->next;
+////	}
+////	return (max_len + (ants / n) + (ants % n));
+////}
 //
-//int		find_length_corridor_with_ants(int ants, t_bilist *solution)
-//{
-//	t_bilist	*corridor;
-//	int			n;
-//	int			max_len;
-//
-//	max_len = find_max_length_corridor(solution);
-//	n = ft_bilstlength(&solution);
-//	corridor = solution;
-//	while (corridor)
-//	{
-//		if (ants > 0)
-//			ants -= max_len -
-//					ft_bilstlength(((t_bilist**)&(corridor->content)));
-//		else
-//			return (max_len);
-//		corridor = corridor->next;
-//	}
-//	return (max_len + (ants / n) + (ants % n));
-//}
-//
-//void print_result(int ants, t_bilist *solution)
+//void print_result_vanya(int ants, t_bilist *solution)
 //{
 //	int i;
 //	int j;
@@ -100,6 +100,7 @@
 //		i++;
 //	}
 //}
+/////////////////////////////////////////////////////////////////////////////
 
 size_t	ft_count_len_corridor(t_bilist *cor)
 {
@@ -121,48 +122,57 @@ size_t	ft_one_solution_add_ants(t_bilist *sol, size_t an)
 	return (an);
 }
 
+int		ft_count_data(size_t *cont, size_t *an, int i)
+{
+	size_t	content;
+	size_t	ant;
+
+	content = *cont + 1;
+	ant = *an - 1;
+	*cont = content;
+	*an = ant;
+	return (i);
+}
+
+size_t	ft_add_ant_corr(t_bilist *cor, size_t an)
+{
+	t_bilist *tmp;
+	int i;
+
+	tmp = cor;
+	while (tmp)
+	{
+		i = 0;
+		if (!tmp->next && !tmp->prev)
+			an = ft_one_solution_add_ants(tmp, an);
+		if (tmp->next && tmp->content_size < tmp->next->content_size &&
+			an)
+			i = ft_count_data(&tmp->content_size, &an, 1);
+		if (tmp->next && tmp->content_size == tmp->next->content_size &&
+			an)
+			i = ft_count_data(&tmp->content_size, &an, 0);
+		if (i == 1)
+		{
+			return(an);
+		}
+		if (!tmp->next && tmp->prev && tmp->content_size <
+									   tmp->prev->content_size && an)
+			ft_count_data(&tmp->content_size, &an, 0);
+		tmp = tmp->next;
+	}
+	return (an);
+}
+
 void	ft_add_ants_solution(t_bilist *solution, int ants)
 {
 	t_bilist *tmp;
 	size_t	an;
-	int i;
 
 	an = (size_t)ants;
 	while (an)
 	{
 		tmp = solution;
-		while (tmp)
-		{
-			i = 0;
-			if (!tmp->next && !tmp->prev)
-				an = ft_one_solution_add_ants(tmp, an);
-			if (tmp->next && tmp->content_size < tmp->next->content_size &&
-			an)
-			{
-				tmp->content_size++;
-				an--;
-				i = 1;
-			}
-			if (tmp->next && tmp->content_size == tmp->next->content_size &&
-				an)
-			{
-				tmp->content_size++;
-				an--;
-				i = 0;
-			}
-			if (i == 1)
-			{
-				tmp = solution;
-				break;
-			}
-			if (!tmp->next && tmp->prev && tmp->content_size <
-			tmp->prev->content_size && an)
-			{
-				tmp->content_size++;
-				an--;
-			}
-			tmp = tmp->next;
-		}
+		an = ft_add_ant_corr(tmp, an);
 	}
 }
 
@@ -402,8 +412,6 @@ void	ft_print_room(t_bilist *cor, int i, t_bilist *start, int len)
 		{
 			tmp = (t_room*)cor->content;
 			name = tmp->name;
-			if (cor->content_size == 17 && ft_strequ(name, "end0"))
-				cor->content_size = 17;
 			ft_printf("L%d-%s", cor->content_size, name);
 //			if(ft_search_for_next_print(start, cor->content_size, len))
 				ft_printf(" ");
@@ -506,7 +514,7 @@ void	print_result(int ants, t_lem_in *lem_in)
 	int	ant;
 	t_bilist *solution;
 
-	i = 1;
+	i = 0;
 	j = 1;
 	ant = 1;
 	solution = select_solution(lem_in);
@@ -514,10 +522,13 @@ void	print_result(int ants, t_lem_in *lem_in)
 	while (j > 0)
 	{
 		j = ft_step_ants_room(solution, &ant, ants);
-		if (ant > ants + 1)
-			terminate("WTF?!"); //todo такого быть не должно!
-		print_current_position_ants(solution);
-		if (i++ != 1)
+		if (j)
+			print_current_position_ants(solution);
+		if (i++ && j)
 			ft_printf("\n");
 	}
+//	ft_printf("\n");
+//	ft_printf("\n");
+//	ft_printf("\n");
+//	print_result_vanya(ants, solution);
 }
