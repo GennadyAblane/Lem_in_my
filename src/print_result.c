@@ -6,7 +6,7 @@
 /*   By: ablane <ablane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 13:27:11 by ablane            #+#    #+#             */
-/*   Updated: 2020/10/15 14:27:54 by ablane           ###   ########.fr       */
+/*   Updated: 2020/10/19 12:36:02 by ablane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ void	ft_add_ants_solution(t_bilist *solution, int ants)
 {
 	t_bilist *tmp;
 	size_t	an;
+	int i;
 
 	an = (size_t)ants;
 	while (an)
@@ -132,14 +133,30 @@ void	ft_add_ants_solution(t_bilist *solution, int ants)
 		tmp = solution;
 		while (tmp)
 		{
+			i = 0;
 			if (!tmp->next && !tmp->prev)
 				an = ft_one_solution_add_ants(tmp, an);
-			if (tmp->next && tmp->content_size <= tmp->next->content_size && an)
+			if (tmp->next && tmp->content_size < tmp->next->content_size &&
+			an)
 			{
 				tmp->content_size++;
 				an--;
+				i = 1;
 			}
-			if (tmp->prev && tmp->content_size < tmp->prev->content_size && an)
+			if (tmp->next && tmp->content_size == tmp->next->content_size &&
+				an)
+			{
+				tmp->content_size++;
+				an--;
+				i = 0;
+			}
+			if (i == 1)
+			{
+				tmp = solution;
+				break;
+			}
+			if (!tmp->next && tmp->prev && tmp->content_size <
+			tmp->prev->content_size && an)
 			{
 				tmp->content_size++;
 				an--;
@@ -161,7 +178,53 @@ void	ft_subtract_len_corridor_content_size(t_bilist *solution)
 	}
 }
 
-void	ft_start_ants_first_room(t_bilist *solution, int ants)
+void	ft_bilstsort_content_size(t_bilist **alst, int (*cmp)(size_t , size_t))
+{
+	t_bilist	*tmp;
+
+	if (alst && *alst)
+	{
+		tmp = *alst;
+		while (tmp->prev)
+			tmp = tmp->prev;
+		while (tmp->next)
+		{
+			if (cmp(tmp->content_size, tmp->next->content_size))
+			{
+				ft_bilstswap(tmp, tmp->next);
+				while (tmp->prev)
+					tmp = tmp->prev;
+				continue;
+			}
+			tmp = tmp->next;
+		}
+		while (tmp->prev)
+			tmp = tmp->prev;
+		*alst = tmp;
+	}
+}
+
+int		ft_more_less_content_size(size_t a, size_t b)
+{
+	if (a > b)
+		return (1);
+	return (0);
+}
+
+void	ft_print_len_cor(t_bilist *sol)
+{
+	t_bilist *tmp;
+
+	tmp = sol;
+	while (tmp)
+	{
+		ft_printf("%d\t", tmp->content_size);
+		tmp = tmp->next;
+	}
+	ft_printf("\n");
+}
+
+t_bilist	*ft_start_ants_first_room(t_bilist *solution, int ants)
 {
 	t_bilist *tmp;
 
@@ -171,8 +234,13 @@ void	ft_start_ants_first_room(t_bilist *solution, int ants)
 		tmp->content_size = ft_count_len_corridor((t_bilist*)tmp->content);
 		tmp = tmp->next;
 	}
+	ft_bilstsort_content_size(&solution, ft_more_less_content_size);
+	ft_print_len_cor(solution);
 	ft_add_ants_solution(solution, ants);
+	ft_print_len_cor(solution);
 	ft_subtract_len_corridor_content_size(solution);
+	ft_print_len_cor(solution);
+	return (solution);
 }
 
 void	ft_step_ants_corridor(t_bilist *cor, size_t *num_ant, int ants)
@@ -277,7 +345,7 @@ int		search_next_print(t_bilist *solution, int ant, int i)
 		}
 		while (tmp_cor)
 		{
-			if (tmp_cor->prev && tmp_cor->content_size == ant)
+			if (tmp_cor->prev && tmp_cor->content_size == (size_t)ant)
 			{
 				tmp_cor = tmp_cor->next;
 				i--;
@@ -293,7 +361,7 @@ int		search_next_print(t_bilist *solution, int ant, int i)
 	return (0);
 }
 
-int		ft_search_for_next_print(t_bilist *start, int ant, int len, int i)
+int		ft_search_for_next_print(t_bilist *start, int ant, int i)
 {
 //	t_bilist *tmpstart;
 //	t_bilist *tmp_cor;
@@ -337,7 +405,7 @@ void	ft_print_room(t_bilist *cor, int i, t_bilist *start, int len)
 			if (cor->content_size == 17 && ft_strequ(name, "end0"))
 				cor->content_size = 17;
 			ft_printf("L%d-%s", cor->content_size, name);
-			if(ft_search_for_next_print(start, cor->content_size, len, i))
+//			if(ft_search_for_next_print(start, cor->content_size, len))
 				ft_printf(" ");
 		}
 		n++;
@@ -442,7 +510,7 @@ void	print_result(int ants, t_lem_in *lem_in)
 	j = 1;
 	ant = 1;
 	solution = select_solution(lem_in);
-	ft_start_ants_first_room(solution, ants);
+	solution = ft_start_ants_first_room(solution, ants);
 	while (j > 0)
 	{
 		j = ft_step_ants_room(solution, &ant, ants);

@@ -45,6 +45,8 @@ t_room					*new_room(char *name, int x, int y);
 
 t_bilist				*find_short_corridor(t_room *end_room);
 
+int						find_length_corridor_with_ants(int ants, t_bilist *solution);
+
 void					terminate(char *s);
 void					find_solution(t_lem_in *lem_in);
 void					parsing_input(t_lem_in *lem_in, int fd);
